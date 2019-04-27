@@ -1,12 +1,16 @@
 const puppeteer = require("puppeteer");
 
 const zones = [353, 49, 354, 355, 14, 356];
-const links = [];
+let links = [];
 
 function getLinks(page, count) {
   return new Promise(async (res, rej) => {
     console.log("new page");
-    await page.screenshot({ path: `page${count}.png` });
+    // await page.screenshot({ path: `page${count}.png` });
+    const anchors = await page.$$eval("article a", anchors =>
+      anchors.map(elm => elm.href)
+    );
+    links = [...links, ...anchors];
     res();
   });
 }
@@ -53,6 +57,7 @@ function getLinks(page, count) {
       ]);
     }
   }
-
+  const uniqLinks = new Set(links);
+  console.log(uniqLinks);
   process.exit(0);
 })();
