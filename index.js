@@ -4,10 +4,9 @@ const fs = require("fs");
 const zones = [353, 49, 354, 355, 14, 356];
 let links = [];
 
-function getLinks(page, count, zoneID) {
+function getLinks(page) {
   return new Promise(async (res, rej) => {
     console.log(`-- Grabbing 🔗's`);
-    await page.screenshot({ path: `images/page${count}-${zoneID}.png` });
     try {
       const anchors = await page.$$eval("article a", anchors =>
         anchors.map(elm => elm.href)
@@ -47,7 +46,7 @@ function loadPage(zoneID) {
     let count = 0;
     while (next !== null) {
       count++;
-      await getLinks(page, count, zoneID);
+      await getLinks(page);
       next = await page.$$(
         "#ctl00_ContentMain_UcListingsGrid_UcSearchBar_UcPagination_lnkNext"
       );
@@ -67,6 +66,10 @@ function loadPage(zoneID) {
     await browser.close();
     res();
   });
+}
+
+if(!fs.existsSync('./images')) {
+  fs.mkdirSync('./images');
 }
 
 zones
